@@ -78,6 +78,13 @@ function dbRarity(card: any): string {
   return normalizeRarity(card?.rarity);
 }
 
+function rarityFilterValue(card: any, preset: EditionPreset): string {
+  if (preset === 'pokemon_fs_ed1') {
+    return pokemonFsRarityKey(card?.rarity);
+  }
+  return dbRarity(card);
+}
+
 function rarityOptionsFor(cards: any[], preset: EditionPreset): string[] {
   const presentRarities = Array.from(new Set(cards.map(c => dbRarity(c)).filter(Boolean)));
   if (preset === 'set1_ed1') {
@@ -162,6 +169,12 @@ function CardList() {
 
   useEffect(() => {
     setEditionPreset(presetFromUrl);
+    setRarityFilter('');
+    setVersionFilter('');
+    setListRarityFilter('');
+    setListVersionFilter('');
+    setPendingRarityFilter('');
+    setPendingVersionFilter('');
   }, [presetFromUrl]);
 
   useEffect(() => {
@@ -545,7 +558,7 @@ function CardList() {
   const versions = Array.from(new Set(displayCards.map(c => c.version).filter(Boolean)));
 
   const filtered = displayCards.filter(c =>
-    (!rarityFilter || dbRarity(c) === rarityFilter) &&
+    (!rarityFilter || rarityFilterValue(c, editionPreset) === rarityFilter) &&
     (!versionFilter || c.version === versionFilter)
   );
 
@@ -572,7 +585,7 @@ function CardList() {
 
   const exportRows = shoppingCards
     .filter(c =>
-      (!listRarityFilter || dbRarity(c) === listRarityFilter) &&
+      (!listRarityFilter || rarityFilterValue(c, editionPreset) === listRarityFilter) &&
       (!listVersionFilter || c.version === listVersionFilter)
     )
     .map(c => ({
@@ -661,14 +674,14 @@ function CardList() {
   const listRarities = rarityOptionsFor(shoppingCards, editionPreset);
   const listVersions = Array.from(new Set(shoppingCards.map(c => c.version).filter(Boolean)));
   const filteredMissingList = shoppingCards.filter(c =>
-    (!listRarityFilter || dbRarity(c) === listRarityFilter) &&
+    (!listRarityFilter || rarityFilterValue(c, editionPreset) === listRarityFilter) &&
     (!listVersionFilter || c.version === listVersionFilter)
   );
 
   const pendingRarities = rarityOptionsFor(pendingCards, editionPreset);
   const pendingVersions = Array.from(new Set(pendingCards.map(c => c.version).filter(Boolean)));
   const filteredPendingList = pendingCards.filter(c =>
-    (!pendingRarityFilter || dbRarity(c) === pendingRarityFilter) &&
+    (!pendingRarityFilter || rarityFilterValue(c, editionPreset) === pendingRarityFilter) &&
     (!pendingVersionFilter || c.version === pendingVersionFilter)
   );
   const allFilteredPendingSelected =
