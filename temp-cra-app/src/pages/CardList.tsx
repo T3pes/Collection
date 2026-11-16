@@ -561,25 +561,82 @@ function CardList() {
         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 bg-gray-100'
     }`;
 
-  // --- Export CSV (aperto da Excel) ---
-  const handleExportExcel = () => {
-    const headers = ['#', 'Nome', 'Rarita', 'Versione', 'Tipo', 'Set'];
-    const rows = shoppingCards.map(c => [
-      c.id,
-      `"${(c.name ?? '').replace(/"/g, '""')}"`,
-      c.rarity ?? '',
-      c.version ?? '',
-      c.type ?? '',
-      `"${(c.set ?? '').replace(/"/g, '""')}"`,
-    ]);
-    const csv = [headers.join(';'), ...rows.map(r => r.join(';'))].join('\n');
-    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const downloadBlob = (blob: Blob, fileName: string) => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'carte_mancanti.csv';
+    a.download = fileName;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const exportRows = shoppingCards
+    .filter(c =>
+      (!listRarityFilter || dbRarity(c) === listRarityFilter) &&
+      (!listVersionFilter || c.version === listVersionFilter)
+    )
+    .map(c => ({
+    id: c.id ?? '',
+    name: c.name ?? '',
+    rarity: c.rarity ?? '',
+    version: c.version ?? '',
+    type: c.type ?? '',
+    set: c.set ?? '',
+  }));
+
+  const handleExportMissingCsv = () => {
+    const headers = ['#', 'Nome', 'Rarita', 'Versione', 'Tipo', 'Set'];
+    const rows = exportRows.map(r => [
+      r.id,
+      `"${String(r.name).replace(/"/g, '""')}"`,
+      r.rarity,
+      r.version,
+      r.type,
+      `"${String(r.set).replace(/"/g, '""')}"`,
+    ]);
+    const csv = [headers.join(';'), ...rows.map(r => r.join(';'))].join('\n');
+    downloadBlob(new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' }), 'carte_mancanti.csv');
+  };
+
+  const handleExportMissingExcel = () => {
+    const escapeHtml = (value: unknown): string =>
+      String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+
+    const tableRows = exportRows
+      .map(r => `<tr><td>${escapeHtml(r.id)}</td><td>${escapeHtml(r.name)}</td><td>${escapeHtml(r.rarity)}</td><td>${escapeHtml(r.version)}</td><td>${escapeHtml(r.type)}</td><td>${escapeHtml(r.set)}</td></tr>`)
+      .join('');
+
+    const html = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+        <head><meta charset="utf-8" /></head>
+        <body>
+          <table>
+            <thead><tr><th>#</th><th>Nome</th><th>Rarita</th><th>Versione</th><th>Tipo</th><th>Set</th></tr></thead>
+            <tbody>${tableRows}</tbody>
+          </table>
+        </body>
+      </html>
+    `.trim();
+
+    downloadBlob(new Blob(['\uFEFF' + html], { type: 'application/vnd.ms-excel;charset=utf-8;' }), 'carte_mancanti.xls');
+  };
+
+  const handleExportMissingNumericList = () => {
+    const ids = Array.from(
+      new Set(
+        exportRows
+          .map(r => String(r.id).trim())
+          .filter(Boolean)
+      )
+    ).sort((a, b) => Number(a) - Number(b));
+
+    const content = ids.join(',');
+    downloadBlob(new Blob([content], { type: 'text/plain;charset=utf-8;' }), 'carte_mancanti_lista_numerica.txt');
   };
 
   // --- Filtri per tabella lista mancanti ---
@@ -700,13 +757,29 @@ function CardList() {
                 {saving ? 'Spostamento...' : `📦 Metti in attesa (${selectedUuids.size})`}
               </button>
             )}
-            <button
-              onClick={handleExportExcel}
-              disabled={shoppingCards.length === 0}
-              className="ml-auto flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white text-sm font-semibold rounded hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              ⬇ Scarica CSV (Excel)
-            </button>
+            <div className="ml-auto flex flex-wrap items-center gap-2">
+              <button
+                onClick={handleExportMissingCsv}
+                disabled={filteredMissingList.length === 0}
+                className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white text-sm font-semibold rounded hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                ⬇ CSV
+              </button>
+              <button
+                onClick={handleExportMissingExcel}
+                disabled={filteredMissingList.length === 0}
+                className="flex items-center gap-2 px-3 py-1.5 bg-emerald-600 text-white text-sm font-semibold rounded hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                ⬇ Excel
+              </button>
+              <button
+                onClick={handleExportMissingNumericList}
+                disabled={filteredMissingList.length === 0}
+                className="flex items-center gap-2 px-3 py-1.5 bg-slate-600 text-white text-sm font-semibold rounded hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                ⬇ Lista numerica
+              </button>
+            </div>
           </div>
 
           {/* Tabella */}
