@@ -627,15 +627,33 @@ function CardList() {
   };
 
   const handleExportMissingNumericList = () => {
-    const ids = Array.from(
-      new Set(
-        exportRows
-          .map(r => String(r.id).trim())
-          .filter(Boolean)
-      )
-    ).sort((a, b) => Number(a) - Number(b));
+    const toSortedUniqueIds = (rows: Array<{ id: unknown }>) =>
+      Array.from(
+        new Set(
+          rows
+            .map(r => String(r.id).trim())
+            .filter(Boolean)
+        )
+      ).sort((a, b) => Number(a) - Number(b));
 
-    const content = ids.join(',');
+    const normalize = (value: unknown) => String(value ?? '').trim().toUpperCase();
+    const commonRows = exportRows.filter(r => normalize(r.rarity) === 'COMUNE' && normalize(r.version) !== 'REVERSE');
+    const reverseRows = exportRows.filter(r => normalize(r.version) === 'REVERSE');
+    const otherRows = exportRows.filter(r => normalize(r.rarity) !== 'COMUNE' && normalize(r.version) !== 'REVERSE');
+
+    const commonIds = toSortedUniqueIds(commonRows);
+    const reverseIds = toSortedUniqueIds(reverseRows);
+    const otherIds = toSortedUniqueIds(otherRows);
+
+    const lines = [
+      `Comuni: ${commonIds.length > 0 ? commonIds.join(',') : '-'}`,
+      `Reverse: ${reverseIds.length > 0 ? reverseIds.join(',') : '-'}`,
+    ];
+    if (otherIds.length > 0) {
+      lines.push(`Altre rarita: ${otherIds.join(',')}`);
+    }
+
+    const content = lines.join('\n');
     downloadBlob(new Blob([content], { type: 'text/plain;charset=utf-8;' }), 'carte_mancanti_lista_numerica.txt');
   };
 
