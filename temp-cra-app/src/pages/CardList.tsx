@@ -110,6 +110,16 @@ function editionPresetLabel(preset: EditionPreset): string {
   return 'Set non selezionato';
 }
 
+function exportFileBaseName(collectionLabel: string): string {
+  const sanitized = collectionLabel
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[\\/:*?"<>|]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return sanitized || 'collezione';
+}
+
 function CardList() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -592,10 +602,13 @@ function CardList() {
     id: c.id ?? '',
     name: c.name ?? '',
     rarity: c.rarity ?? '',
+    rarityDisplay: rarityFilterValue(c, editionPreset),
     version: c.version ?? '',
     type: c.type ?? '',
     set: c.set ?? '',
   }));
+  const selectedCollectionLabel = editionPresetLabel(editionPreset);
+  const exportBaseName = exportFileBaseName(selectedCollectionLabel);
 
   const handleExportMissingCsv = () => {
     const headers = ['#', 'Nome', 'Rarita', 'Versione', 'Tipo', 'Set'];
@@ -608,7 +621,7 @@ function CardList() {
       `"${String(r.set).replace(/"/g, '""')}"`,
     ]);
     const csv = [headers.join(';'), ...rows.map(r => r.join(';'))].join('\n');
-    downloadBlob(new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' }), 'carte_mancanti.csv');
+    downloadBlob(new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' }), `${exportBaseName}.csv`);
   };
 
   const handleExportMissingExcel = () => {
@@ -636,38 +649,35 @@ function CardList() {
       </html>
     `.trim();
 
-    downloadBlob(new Blob(['\uFEFF' + html], { type: 'application/vnd.ms-excel;charset=utf-8;' }), 'carte_mancanti.xls');
+    downloadBlob(new Blob(['\uFEFF' + html], { type: 'application/vnd.ms-excel;charset=utf-8;' }), `${exportBaseName}.xls`);
   };
 
   const handleExportMissingNumericList = () => {
-    const toSortedUniqueIds = (rows: Array<{ id: unknown }>) =>
-      Array.from(
-        new Set(
-          rows
-            .map(r => String(r.id).trim())
-            .filter(Boolean)
-        )
-      ).sort((a, b) => Number(a) - Number(b));
+    const sortIds = (ids: string[]) =>
+      [...ids].sort((a, b) => {
+        const na = Number(a);
+        const nb = Number(b);
+        if (!Number.isNaN(na) && !Number.isNaN(nb)) return na - nb;
+        return a.localeCompare(b, 'it');
+      });
 
-    const normalize = (value: unknown) => String(value ?? '').trim().toUpperCase();
-    const commonRows = exportRows.filter(r => normalize(r.rarity) === 'COMUNE' && normalize(r.version) !== 'REVERSE');
-    const reverseRows = exportRows.filter(r => normalize(r.version) === 'REVERSE');
-    const otherRows = exportRows.filter(r => normalize(r.rarity) !== 'COMUNE' && normalize(r.version) !== 'REVERSE');
-
-    const commonIds = toSortedUniqueIds(commonRows);
-    const reverseIds = toSortedUniqueIds(reverseRows);
-    const otherIds = toSortedUniqueIds(otherRows);
-
-    const lines = [
-      `Comuni: ${commonIds.length > 0 ? commonIds.join(',') : '-'}`,
-      `Reverse: ${reverseIds.length > 0 ? reverseIds.join(',') : '-'}`,
-    ];
-    if (otherIds.length > 0) {
-      lines.push(`Altre rarita: ${otherIds.join(',')}`);
+    const grouped = new Map<string, Set<string>>();
+    for (const row of exportRows) {
+      const id = String(row.id).trim();
+      if (!id) continue;
+      const rarity = String(row.rarityDisplay || row.rarity || '-').trim() || '-';
+      const version = String(row.version || '').trim() || '—';
+      const key = `${rarity} | ${version}`;
+      if (!grouped.has(key)) grouped.set(key, new Set<string>());
+      grouped.get(key)!.add(id);
     }
 
-    const content = lines.join('\n');
-    downloadBlob(new Blob([content], { type: 'text/plain;charset=utf-8;' }), 'carte_mancanti_lista_numerica.txt');
+    const lines = Array.from(grouped.entries())
+      .sort((a, b) => a[0].localeCompare(b[0], 'it'))
+      .map(([label, ids]) => `${label}: ${sortIds(Array.from(ids)).join(',')}`);
+
+    const content = [`Collezione: ${selectedCollectionLabel}`, ...lines].join('\n');
+    downloadBlob(new Blob([content], { type: 'text/plain;charset=utf-8;' }), `${exportBaseName}_lista_numerica.txt`);
   };
 
   // --- Filtri per tabella lista mancanti ---
