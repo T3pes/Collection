@@ -98,13 +98,14 @@ export function groupCards(views: CardView[], collection: Collection | undefined
   return groups;
 }
 
-export type SortKey = 'number' | 'rarity' | 'rare' | 'price';
+export type SortKey = 'number' | 'name' | 'rarity' | 'rare' | 'price';
 
 export function sortGroups(groups: CardGroup[], key: SortKey): CardGroup[] {
   const maxPrice = (g: CardGroup) => Math.max(-1, ...g.variants.map((v) => v.price ?? -1));
   const byNumber = (a: CardGroup, b: CardGroup) => a.number - b.number || a.name.localeCompare(b.name, 'it');
   const out = [...groups];
   if (key === 'number') out.sort((a, b) => byNumber(a, b) || a.rarity_rank - b.rarity_rank);
+  if (key === 'name') out.sort((a, b) => a.name.localeCompare(b.name, 'it', { sensitivity: 'base', numeric: true }) || a.number - b.number);
   if (key === 'rarity') out.sort((a, b) => a.rarity_rank - b.rarity_rank || byNumber(a, b));
   if (key === 'rare') out.sort((a, b) => (b.rarity_rank % 99) - (a.rarity_rank % 99) || byNumber(a, b));
   if (key === 'price') out.sort((a, b) => maxPrice(b) - maxPrice(a) || byNumber(a, b));

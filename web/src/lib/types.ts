@@ -11,7 +11,7 @@ export interface CollectionTheme {
   /** rarity_rank da cui la carta riceve l'effetto foil */
   foilFrom?: number;
   /** ordinamento predefinito della galleria */
-  sort?: 'number' | 'rarity' | 'rare' | 'price';
+  sort?: 'number' | 'name' | 'rarity' | 'rare' | 'price';
 }
 
 export interface Collection {

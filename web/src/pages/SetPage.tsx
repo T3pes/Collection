@@ -317,6 +317,7 @@ export default function SetPage() {
                   onChange={(v) => setSort(v as SortKey)}
                   options={[
                     { value: 'number', label: 'Ordine: numero' },
+                    { value: 'name', label: 'Ordine: nome' },
                     { value: 'rarity', label: 'Ordine: rarità' },
                     { value: 'rare', label: 'Ordine: più rare' },
                     { value: 'price', label: 'Ordine: prezzo' },
