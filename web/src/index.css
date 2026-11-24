@@ -76,6 +76,26 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 110 110'%3E%3Cg fill='none' stroke='white' stroke-width='2.5'%3E%3Ccircle cx='55' cy='55' r='22'/%3E%3Cpath d='M33 55h44'/%3E%3Ccircle cx='55' cy='55' r='7'/%3E%3C/g%3E%3C/svg%3E");
   animation: drift 120s linear infinite reverse;
 }
+.page-bg[data-pattern='stars']::before {
+  opacity: 0.55;
+  background-size: 260px 260px;
+  background-image:
+    radial-gradient(1.5px 1.5px at 20px 30px, white, transparent),
+    radial-gradient(1px 1px at 80px 120px, white, transparent),
+    radial-gradient(1.5px 1.5px at 160px 60px, color-mix(in oklab, var(--accent-2) 80%, white), transparent),
+    radial-gradient(1px 1px at 210px 190px, white, transparent),
+    radial-gradient(2px 2px at 120px 220px, color-mix(in oklab, var(--accent) 70%, white), transparent),
+    radial-gradient(1px 1px at 240px 20px, white, transparent);
+  animation: twinkle 6s ease-in-out infinite alternate, drift 160s linear infinite;
+}
+@keyframes twinkle {
+  from {
+    opacity: 0.35;
+  }
+  to {
+    opacity: 0.7;
+  }
+}
 .page-bg::after {
   content: '';
   position: absolute;

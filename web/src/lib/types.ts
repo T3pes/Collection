@@ -7,7 +7,7 @@ export interface CollectionTheme {
   bg?: string;
   bg2?: string;
   glow?: string;
-  pattern?: 'swirl' | 'rings' | 'none';
+  pattern?: 'swirl' | 'rings' | 'stars' | 'none';
   /** rarity_rank da cui la carta riceve l'effetto foil */
   foilFrom?: number;
   /** ordinamento predefinito della galleria */
@@ -41,6 +41,8 @@ export interface CardSet {
   rarity_order: string[] | null;
   price_provider: 'manual' | 'tcgdex';
   price_config: Record<string, unknown>;
+  /** colori del set: sovrascrivono quelli della collezione (facoltativo) */
+  theme?: CollectionTheme | null;
   sort: number;
 }
 

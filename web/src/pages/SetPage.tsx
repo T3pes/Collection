@@ -5,7 +5,7 @@ import { formatEur, groupCards, matchesQuery, pct, rarityLabel, sortGroups, vers
 import { fileBaseName } from '../lib/export';
 import { useCollections, useRefreshPrices, useSetCards, useSetQuantity, useSets, useSetStatus, useSetUserPrice } from '../lib/queries';
 import type { CardGroup, CardStatus, CardView } from '../lib/types';
-import { Button, EmptyState, ErrorBox, FullPageLoader, PageBackground, ProgressRing, SearchInput, Segmented, SelectField, Stat, useDocumentTheme, useToast } from '../ui/components';
+import { Button, EmptyState, ErrorBox, FullPageLoader, mergeTheme, PageBackground, ProgressRing, SearchInput, Segmented, SelectField, Stat, useDocumentTheme, useToast } from '../ui/components';
 import { Header } from '../ui/Header';
 import { CardList } from './set/CardList';
 import { CardTile } from './set/CardTile';
@@ -30,7 +30,8 @@ export default function SetPage() {
   const sets = useSets();
   const collection = collections.data?.find((c) => c.id === collectionId);
   const set = sets.data?.find((s) => s.id === setId && s.collection_id === collectionId);
-  useDocumentTheme(collection?.theme);
+  const theme = useMemo(() => mergeTheme(collection?.theme, set?.theme), [collection?.theme, set?.theme]);
+  useDocumentTheme(collection ? theme : undefined);
 
   const { views, isLoading, error, lastPriceUpdate } = useSetCards(setId);
   const statusMut = useSetStatus(setId);
@@ -56,7 +57,7 @@ export default function SetPage() {
   const [rarity, setRarity] = useState('');
   const [version, setVersion] = useState('');
   const [sortChoice, setSort] = useState<SortKey | null>(null);
-  const sort: SortKey = sortChoice ?? collection?.theme.sort ?? 'number';
+  const sort: SortKey = sortChoice ?? theme.sort ?? 'number';
   const [grouped, setGrouped] = useState(readGrouped);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [viewerCard, setViewerCard] = useState<string | null>(null);
@@ -222,7 +223,7 @@ export default function SetPage() {
 
   return (
     <>
-      <PageBackground pattern={collection.theme.pattern} />
+      <PageBackground pattern={theme.pattern} />
       <Header crumbs={[{ label: collection.name, to: `/c/${collection.id}` }, { label: `${set.name}${set.code ? ` · ${set.code}` : ''}` }]} />
 
       <main className="mx-auto max-w-7xl px-4 pb-28 sm:px-6">

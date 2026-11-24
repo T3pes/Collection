@@ -17,6 +17,11 @@ export function themeVars(theme?: CollectionTheme | null): CSSProperties {
   return v as CSSProperties;
 }
 
+/** Tema effettivo di un set: quello della collezione con le chiavi del set sopra */
+export function mergeTheme(base?: CollectionTheme | null, over?: CollectionTheme | null): CollectionTheme {
+  return { ...(base ?? {}), ...(over ?? {}) };
+}
+
 /** Applica il tema a tutta la pagina (anche a body e ai dialog) */
 export function useDocumentTheme(theme?: CollectionTheme | null) {
   useEffect(() => {

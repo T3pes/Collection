@@ -5,7 +5,7 @@ import { formatEur, pct } from '../lib/cards';
 import { useCollections, useProgress, useSetPreview, useSets } from '../lib/queries';
 import type { CardSet, Collection, SetProgress } from '../lib/types';
 import { CardFan } from '../ui/CardFan';
-import { ErrorBox, FullPageLoader, PageBackground, ProgressBar, ProgressRing, Stat, useDocumentTheme } from '../ui/components';
+import { ErrorBox, FullPageLoader, mergeTheme, PageBackground, ProgressBar, ProgressRing, Stat, themeVars, useDocumentTheme } from '../ui/components';
 import { Header } from '../ui/Header';
 import { sumProgress } from './HomePage';
 
@@ -15,8 +15,12 @@ function SetCard({ set, collection, progress, index }: { set: CardSet; collectio
   return (
     <Link
       to={`/c/${collection.id}/${set.id}`}
-      className="card-tile panel group flex flex-col overflow-hidden transition hover:-translate-y-1 hover:border-accent/50 hover:shadow-[0_30px_60px_-30px_var(--glow)]"
-      style={{ animationDelay: `${index * 80}ms` }}
+      className="card-tile panel group flex flex-col overflow-hidden text-ink transition hover:-translate-y-1 hover:border-accent/50 hover:shadow-[0_30px_60px_-30px_var(--glow)]"
+      style={{
+        ...themeVars(set.theme ? mergeTheme(collection.theme, set.theme) : null),
+        ...(set.theme ? { background: 'linear-gradient(180deg, color-mix(in oklab, var(--bg-2) 70%, transparent), color-mix(in oklab, var(--bg) 85%, transparent))' } : {}),
+        animationDelay: `${index * 80}ms`,
+      }}
     >
       <div className="relative bg-[radial-gradient(80%_70%_at_50%_10%,color-mix(in_oklab,var(--accent)_22%,transparent),transparent)] px-8 pt-6">
         <CardFan images={preview.data ?? []} back={set.card_back_url ?? collection.card_back_url} label={set.name} />

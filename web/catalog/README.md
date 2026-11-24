@@ -52,4 +52,15 @@ Aggiungi un oggetto in `collections` con:
 
 Poi aggiungi i set come sopra e lancia `npm run catalog:sync`.
 
+## 4 · Colori di un singolo set
+
+Ogni set può avere un suo `theme` (stesse chiavi della collezione: `accent`, `accent2`, `bg`, `bg2`, `ink`, `glow`, `pattern`).
+Vale solo per le chiavi indicate; il resto viene dalla collezione. Per i Pokémon i colori si prendono dalla galleria
+ufficiale del set (`https://tcg.pokemon.com/it-it/galleries/<nome-set>/`, foglio di stile `<nome-set>.css`).
+Esempio (Fiamme Spettrali):
+
+```json
+"theme": { "accent": "#FF9C33", "accent2": "#45B1DB", "bg": "#03051A", "bg2": "#101A6E", "glow": "rgba(255,136,99,0.45)", "pattern": "stars" }
+```
+
 > Lo script usa `SUPABASE_SERVICE_ROLE_KEY` da `web/.env`: tienila solo sul tuo PC, non metterla su Vercel né su Git.

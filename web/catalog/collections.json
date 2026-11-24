@@ -133,7 +133,16 @@
             "lang": "it",
             "syncRarity": true
           },
-          "sort": 10
+          "sort": 10,
+          "theme": {
+            "accent": "#FF9C33",
+            "accent2": "#45B1DB",
+            "ink": "#F4F7FF",
+            "bg": "#03051A",
+            "bg2": "#101A6E",
+            "glow": "rgba(255,136,99,0.45)",
+            "pattern": "stars"
+          }
         },
         {
           "id": "pokemon-me05",
@@ -147,7 +156,16 @@
             "lang": "it",
             "syncRarity": true
           },
-          "sort": 20
+          "sort": 20,
+          "theme": {
+            "accent": "#E339B8",
+            "accent2": "#A9C735",
+            "ink": "#F7F2FF",
+            "bg": "#000000",
+            "bg2": "#3E0A66",
+            "glow": "rgba(227,57,184,0.45)",
+            "pattern": "stars"
+          }
         }
       ]
     }
