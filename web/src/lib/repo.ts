@@ -24,9 +24,8 @@ export interface Repo {
 
 let current: Promise<Repo> | null = null;
 
-/** Demo se richiesto esplicitamente, oppure in sviluppo locale senza variabili Supabase */
-export const isDemo = (): boolean =>
-  import.meta.env.VITE_DEMO === 'true' || (import.meta.env.DEV && (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY));
+/** Demo solo se richiesta: `npm run demo` (mode "demo") oppure VITE_DEMO=true */
+export const isDemo = (): boolean => import.meta.env.VITE_DEMO === 'true' || import.meta.env.MODE === 'demo';
 
 export function getRepo(): Promise<Repo> {
   if (!current) {

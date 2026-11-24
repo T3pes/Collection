@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(!demo);
 
   useEffect(() => {
-    if (demo || !import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) return;
+    if (demo) return;
     const sb = supabase();
     sb.auth.getSession().then(({ data }) => {
       const u = data.session?.user;
@@ -72,19 +72,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }),
     [user, loading, demo],
   );
-
-  if (!demo && (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY)) {
-    return (
-      <div className="grid min-h-screen place-items-center p-6 text-center">
-        <div className="panel max-w-md p-6">
-          <div className="font-display text-xl font-semibold">Configurazione mancante</div>
-          <p className="mt-2 text-sm text-ink/65">
-            Imposta <code>VITE_SUPABASE_URL</code> e <code>VITE_SUPABASE_ANON_KEY</code> (su Vercel: Settings → Environment Variables) e ripubblica.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

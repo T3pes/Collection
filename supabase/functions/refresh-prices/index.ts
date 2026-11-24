@@ -60,8 +60,12 @@ const num = (v: unknown): number | null => {
   return Number.isFinite(n) && n > 0 ? Math.round(n * 100) / 100 : null;
 };
 
-function isServiceRole(req: Request): boolean {
-  const token = (req.headers.get('Authorization') ?? '').replace(/^Bearer\s+/i, '');
+const bearer = (req: Request) => (req.headers.get('Authorization') ?? '').replace(/^Bearer\s+/i, '').trim();
+
+function isServiceRole(token: string): boolean {
+  if (!token) return false;
+  const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  if (serviceKey && token === serviceKey) return true;
   try {
     const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
     return payload?.role === 'service_role';
@@ -76,11 +80,20 @@ Deno.serve(async (req) => {
 
   const body: Json = await req.json().catch(() => ({}));
   const onlySet = typeof body.setId === 'string' ? body.setId : null;
-  const force = body.force === true && isServiceRole(req);
+  const token = bearer(req);
+  const service = isServiceRole(token);
+  const force = body.force === true && service;
 
   const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, {
     auth: { persistSession: false },
   });
+
+  // Autorizzazione: service role (cron) oppure utente loggato nell'app.
+  // Fatta qui perché "Verify JWT" (segreto legacy) non accetta i token firmati con le nuove chiavi.
+  if (!service) {
+    const { data: who, error: authErr } = token ? await admin.auth.getUser(token) : { data: null, error: true };
+    if (authErr || !who?.user) return json({ error: 'Accesso non autorizzato: effettua il login' }, 401);
+  }
 
   let q = admin.from('tcg_sets').select('id, price_provider, price_config, rarity_order, tcg_collections(rarity_order)').eq('price_provider', 'tcgdex').eq('active', true);
   if (onlySet) q = q.eq('id', onlySet);

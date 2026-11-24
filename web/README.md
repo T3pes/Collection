@@ -18,10 +18,11 @@ Riscrittura della vecchia app in `temp-cra-app/` (che resta intatta finché non 
 ```bash
 cd web
 npm install
-npm run dev
+npm run demo      # dati di prova, senza login
+npm run dev       # dati reali Supabase (login)
 ```
 
-Senza `.env` parte in **modalità demo**: tutte le 1.680 carte dei tuoi CSV, prezzi Cardmarket reali di Fiamme Spettrali al 24/11/2026, salvataggio nel browser.
+`npm run demo` parte in **modalità demo**: tutte le 1.680 carte dei tuoi CSV, prezzi Cardmarket reali di Fiamme Spettrali al 24/11/2026, salvataggio nel browser.
 
 ## Passaggio ai dati reali
 
@@ -44,21 +45,14 @@ npx supabase functions deploy refresh-prices --project-ref <PROJECT_REF>
 Poi nell'app apri un set Pokémon e premi **Aggiorna prezzi**: scarica i prezzi, sostituisce le immagini segnaposto con quelle ufficiali italiane e corregge le rarità (Rara doppia, Ultrarara…).
 Facoltativo: `supabase/cron_refresh_prices.sql` per aggiornarli ogni notte.
 
-### 3. Variabili d'ambiente
+### 3. Configurazione
 
-`web/.env` (in locale) e su Vercel:
-
-```
-VITE_SUPABASE_URL=https://ekfwchaoknmsfpqocwsg.supabase.co
-VITE_SUPABASE_ANON_KEY=<anon key>
-```
-
-Attenzione: i nomi cambiano rispetto alla vecchia app (`REACT_APP_…` → `VITE_…`).
+URL Supabase e chiave `sb_publishable_…` sono in `src/lib/config.ts`: sono valori **pubblici** (finiscono comunque nel bundle del browser, i dati sono protetti dalle policy RLS). Si possono sovrascrivere con `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`.
+Non mettere mai nel frontend la chiave segreta (`service_role` / `sb_secret_…`).
 
 ### 4. Vercel
 
-Project → Settings → General → **Root Directory = `web`** (usa `web/vercel.json`), aggiungi le due variabili e ridistribuisci.
-Il `vercel.json` nella radice del repository serve ancora alla vecchia app: finché non cambi la Root Directory, la produzione resta quella attuale.
+Il `vercel.json` nella radice del repository compila `web/` (install `npm --prefix web ci`, output `web/dist`): non serve cambiare nulla nel pannello Vercel. La vecchia app resta in `temp-cra-app/` ma non viene più pubblicata.
 
 ## Aggiungere collezioni e set
 
