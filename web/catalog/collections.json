@@ -1,0 +1,155 @@
+{
+  "$comment": "Catalogo collezioni e set. Modifica questo file e lancia `npm run catalog:sync` per pubblicarlo su Supabase. Vedi catalog/README.md.",
+  "collections": [
+    {
+      "id": "naruto-mythos",
+      "name": "Naruto Mythos",
+      "description": "Trading Card Game ufficiale basato sul manga Naruto",
+      "logo_url": "https://ekfwchaoknmsfpqocwsg.supabase.co/storage/v1/object/public/loghi/Naruto_TCG_Card_Back-0dcade80-640w.webp",
+      "card_back_url": "https://ekfwchaoknmsfpqocwsg.supabase.co/storage/v1/object/public/loghi/Naruto_TCG_Card_Back-0dcade80-640w.webp",
+      "theme": {
+        "accent": "#ff7a1a",
+        "accent2": "#ffcf4a",
+        "ink": "#fff4ea",
+        "bg": "#140906",
+        "bg2": "#2a0f07",
+        "glow": "rgba(255,122,26,0.45)",
+        "pattern": "swirl",
+        "foilFrom": 3,
+        "sort": "rarity"
+      },
+      "rarity_order": [
+        "C",
+        "UC",
+        "R",
+        "RA",
+        "S",
+        "SP",
+        "SV",
+        "POP",
+        "CHIBI",
+        "SHINOBI",
+        "M",
+        "MYTHOS",
+        "L",
+        "MISSION"
+      ],
+      "rarity_labels": {
+        "C": "Comune",
+        "UC": "Non comune",
+        "R": "Rara",
+        "RA": "Rara alternativa",
+        "S": "Secret",
+        "SP": "Speciale",
+        "SV": "Secret numerata",
+        "POP": "Pop",
+        "CHIBI": "Chibi",
+        "SHINOBI": "Shinobi",
+        "M": "Mythos",
+        "MYTHOS": "Mythos",
+        "L": "Legendary",
+        "MISSION": "Missione"
+      },
+      "version_order": [
+        "Normale",
+        "Full Art",
+        "Holo"
+      ],
+      "market_search_url": "https://www.ebay.it/sch/i.html?_nkw=Naruto+Mythos+{q}",
+      "sort": 10,
+      "sets": [
+        {
+          "id": "naruto-s1-1ed",
+          "name": "Konoha Shidō",
+          "subtitle": "Set 1 · 1ª edizione",
+          "code": "S1E1",
+          "price_provider": "manual",
+          "sort": 10
+        },
+        {
+          "id": "naruto-s1-2ed",
+          "name": "Konoha Shidō",
+          "subtitle": "Set 1 · 2ª edizione",
+          "code": "S1E2",
+          "price_provider": "manual",
+          "sort": 20
+        },
+        {
+          "id": "naruto-s2-1ed",
+          "name": "Shinobi Shiren",
+          "subtitle": "Set 2 · 1ª edizione",
+          "code": "S2E1",
+          "price_provider": "manual",
+          "sort": 30
+        }
+      ]
+    },
+    {
+      "id": "pokemon-tcg",
+      "name": "Pokémon TCG",
+      "description": "Gioco di Carte Collezionabili Pokémon — espansioni in italiano",
+      "logo_url": "https://ekfwchaoknmsfpqocwsg.supabase.co/storage/v1/object/public/loghi/Pokemon-01.png",
+      "card_back_url": null,
+      "theme": {
+        "accent": "#ffcb05",
+        "accent2": "#3d7dca",
+        "ink": "#f4f7ff",
+        "bg": "#07102a",
+        "bg2": "#0f2357",
+        "glow": "rgba(255,203,5,0.40)",
+        "pattern": "rings",
+        "foilFrom": 4,
+        "sort": "number"
+      },
+      "rarity_order": [
+        "Comune",
+        "Non comune",
+        "Rara",
+        "Rara doppia",
+        "Ultrarara",
+        "Rara illustrazione",
+        "Rara illustrazione speciale",
+        "Rara iper Mega",
+        "Mega Iper Raro"
+      ],
+      "rarity_labels": {},
+      "version_order": [
+        "Normale",
+        "Reverse",
+        "Holo"
+      ],
+      "market_search_url": "https://www.cardmarket.com/it/Pokemon/Products/Search?searchString={q}",
+      "sort": 20,
+      "sets": [
+        {
+          "id": "pokemon-me02",
+          "name": "Fiamme Spettrali",
+          "subtitle": "Megaevoluzione",
+          "code": "ME02",
+          "price_provider": "tcgdex",
+          "price_config": {
+            "setId": "me02",
+            "series": "me",
+            "lang": "it",
+            "syncRarity": true
+          },
+          "sort": 10
+        },
+        {
+          "id": "pokemon-me05",
+          "name": "Buio Pesto",
+          "subtitle": "Megaevoluzione",
+          "code": "ME05",
+          "price_provider": "tcgdex",
+          "price_config": {
+            "setId": "me05",
+            "series": "me",
+            "lang": "it",
+            "syncRarity": true
+          },
+          "sort": 20
+        }
+      ]
+    }
+  ]
+}
