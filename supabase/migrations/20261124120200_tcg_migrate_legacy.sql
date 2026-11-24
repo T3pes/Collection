@@ -124,10 +124,14 @@ begin
   -- ---------------- in attesa di arrivo ----------------
   if to_regclass('public.pending_cards') is not null then
     insert into public.tcg_user_cards (user_id, card_id, status, quantity)
-    select distinct p.user_id, p.card_uuid::uuid, 'pending', 1
-    from public.pending_cards p
-    where p.card_uuid ~* uuid_re
-      and exists (select 1 from public.tcg_cards c where c.id = p.card_uuid::uuid)
+    select distinct p.user_id, p.cid, 'pending', 1
+    from (
+      select (j->>'user_id')::uuid as user_id,
+             (case when j->>'card_uuid' ~* uuid_re then j->>'card_uuid' else j->>'card_id' end)::uuid as cid
+      from (select to_jsonb(t) as j from public.pending_cards t) s
+      where coalesce(j->>'card_uuid', '') ~* uuid_re or coalesce(j->>'card_id', '') ~* uuid_re
+    ) p
+    where exists (select 1 from public.tcg_cards c where c.id = p.cid)
     on conflict (user_id, card_id) do nothing;   -- se già posseduta, resta posseduta
     get diagnostics n_pending = row_count;
     raise notice 'In attesa di arrivo copiate: %', n_pending;
