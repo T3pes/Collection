@@ -31,7 +31,7 @@ async function load() {
   cardsBySet = new Map();
   for (const r of fixture.cards) {
     const card: Card = {
-      id: r[0], set_id: r[1], number: r[2], number_label: null, name: r[3], subtitle: r[4], rarity: r[5],
+      id: r[0], set_id: r[1], number: r[2], number_label: r[2] >= 900 ? String.fromCharCode(r[2] - 900 + 64) : null, name: r[3], subtitle: r[4], rarity: r[5],
       rarity_rank: r[6], version: r[7], variant: r[8], type: r[9], image_url: r[10], external_id: r[11],
     };
     const list = cardsBySet.get(card.set_id) ?? [];

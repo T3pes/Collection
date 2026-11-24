@@ -110,7 +110,9 @@ async function cardsFromTcgdex(set, order) {
     while (i < data.cards.length) {
       const brief = data.cards[i++];
       const d = await getJson(`https://api.tcgdex.net/v2/${lang}/cards/${encodeURIComponent(brief.id)}`);
-      const number = parseInt(d.localId, 10);
+      // carte con lettera al posto del numero (es. Mew "B"): 900 + posizione della lettera
+      const parsed = parseInt(d.localId, 10);
+      const number = Number.isFinite(parsed) ? parsed : 900 + (d.localId.toUpperCase().charCodeAt(0) - 64);
       const versions = [];
       if (d.variants?.normal) versions.push('Normale');
       if (d.variants?.reverse) versions.push('Reverse');
@@ -120,6 +122,7 @@ async function cardsFromTcgdex(set, order) {
           id: uuidv5(`${set.id}|${number}|${d.name}|${version}`),
           set_id: set.id,
           number,
+          number_label: Number.isFinite(parsed) ? null : d.localId,
           name: d.name,
           rarity: d.rarity ?? null,
           rarity_rank: rankOf(order, d.rarity),

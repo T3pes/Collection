@@ -149,8 +149,10 @@ Deno.serve(async (req) => {
       continue;
     }
 
+    // Abbinamento per id TCGdex (es. "30th-B"), con ripiego sul numero
+    const neededIds = new Set(cards.map((c) => c.external_id).filter(Boolean) as string[]);
     const neededNumbers = new Set(cards.map((c) => c.number));
-    const briefs = setData.cards.filter((c) => neededNumbers.has(parseInt(c.localId, 10)));
+    const briefs = setData.cards.filter((c) => neededIds.has(c.id) || neededNumbers.has(parseInt(c.localId, 10)));
     const details = await mapLimit(briefs, CONCURRENCY, async (b) => {
       try {
         return await getJson<{
@@ -164,8 +166,16 @@ Deno.serve(async (req) => {
         return null;
       }
     });
-    const byNumber = new Map<number, (typeof details)[number] & { id?: string }>();
-    details.forEach((d, i) => d && byNumber.set(parseInt(d.localId, 10), { ...d, id: briefs[i].id }));
+    type Detail = NonNullable<(typeof details)[number]> & { id: string };
+    const byNumber = new Map<number, Detail>();
+    const byId = new Map<string, Detail>();
+    details.forEach((d, i) => {
+      if (!d) return;
+      const full = { ...d, id: briefs[i].id };
+      byId.set(full.id, full);
+      const n = parseInt(d.localId, 10);
+      if (Number.isFinite(n)) byNumber.set(n, full);
+    });
 
     const priceRows: Json[] = [];
     const historyRows: Json[] = [];
@@ -173,7 +183,7 @@ Deno.serve(async (req) => {
     const now = new Date().toISOString();
 
     for (const card of cards) {
-      const d = byNumber.get(card.number);
+      const d = (card.external_id ? byId.get(card.external_id) : undefined) ?? byNumber.get(card.number);
       if (!d) continue;
 
       const patch: CardPatch = { id: card.id };

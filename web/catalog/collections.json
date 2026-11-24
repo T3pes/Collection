@@ -108,11 +108,18 @@
         "Rara doppia",
         "Ultrarara",
         "Rara illustrazione",
+        "Pikachu Rare",
         "Rara illustrazione speciale",
+        "Futuristic Rare",
+        "RGB Rare",
         "Rara iper Mega",
         "Mega Iper Raro"
       ],
-      "rarity_labels": {},
+      "rarity_labels": {
+        "Pikachu Rare": "Rara Pikachu",
+        "Futuristic Rare": "Rara futuristica",
+        "RGB Rare": "Rara RGB"
+      },
       "version_order": [
         "Normale",
         "Reverse",
@@ -166,6 +173,30 @@
             "glow": "rgba(227,57,184,0.45)",
             "pattern": "stars"
           }
+        },
+        {
+          "id": "pokemon-30th",
+          "name": "30° Anniversario",
+          "subtitle": "Megaevoluzione",
+          "code": "30TH",
+          "release_date": "2026-09-16",
+          "price_provider": "tcgdex",
+          "price_config": {
+            "setId": "30th",
+            "series": "me",
+            "lang": "it",
+            "syncRarity": true
+          },
+          "theme": {
+            "accent": "#F9DB30",
+            "accent2": "#8AE0FE",
+            "ink": "#FFF9E6",
+            "bg": "#12001C",
+            "bg2": "#4B0064",
+            "glow": "rgba(249,219,48,0.40)",
+            "pattern": "stars"
+          },
+          "sort": 30
         }
       ]
     }
