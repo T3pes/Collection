@@ -1,8 +1,8 @@
-import { ClipboardCopy, Clock3, Download, FileSpreadsheet, Layers, ListOrdered, PackageCheck, RefreshCw, ShoppingCart, SquareStack, Trash2 } from 'lucide-react';
+import { Clock3, Layers, PackageCheck, RefreshCw, ShoppingCart, SquareStack, Trash2 } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { Navigate, useParams, useSearchParams } from 'react-router';
 import { formatEur, groupCards, matchesQuery, pct, rarityLabel, sortGroups, versionIndex, type SortKey } from '../lib/cards';
-import { exportCsv, exportExcel, exportNumericList, fileBaseName, numericList } from '../lib/export';
+import { fileBaseName } from '../lib/export';
 import { useCollections, useRefreshPrices, useSetCards, useSetQuantity, useSets, useSetStatus, useSetUserPrice } from '../lib/queries';
 import type { CardGroup, CardStatus, CardView } from '../lib/types';
 import { Button, EmptyState, ErrorBox, FullPageLoader, PageBackground, ProgressRing, SearchInput, Segmented, SelectField, Stat, useDocumentTheme, useToast } from '../ui/components';
@@ -10,6 +10,7 @@ import { Header } from '../ui/Header';
 import { CardList } from './set/CardList';
 import { CardTile } from './set/CardTile';
 import { CardViewer } from './set/CardViewer';
+import { ExportMenu } from './set/ExportMenu';
 
 type Tab = 'galleria' | 'acquisti' | 'arrivo';
 type Stato = 'tutte' | 'possedute' | 'mancanti';
@@ -116,6 +117,14 @@ export default function SetPage() {
   const shopping = useMemo(() => filtered.filter((v) => v.status == null).sort(listSort), [filtered]); // eslint-disable-line react-hooks/exhaustive-deps
   const arriving = useMemo(() => filtered.filter((v) => v.status === 'pending').sort(listSort), [filtered]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const galleryExport = useMemo(
+    () =>
+      filtered
+        .filter((v) => (stato === 'possedute' ? v.status === 'owned' : stato === 'mancanti' ? v.status !== 'owned' : true))
+        .sort(listSort),
+    [filtered, stato], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
   // ---------------- viewer ----------------
   const sequence: CardGroup[] = useMemo(() => {
     if (tab === 'galleria') return galleryGroups;
@@ -201,11 +210,15 @@ export default function SetPage() {
   const p = pct(counts.owned, counts.total);
   const rarityText = (r: string | null) => rarityLabel(collection, r);
   const exportTitle = `${collection.name} — ${set.name}${set.subtitle ? ` (${set.subtitle})` : ''}`;
-  const exportBase = fileBaseName(`${set.name} ${set.subtitle ?? ''} mancanti`);
+  const exportWhat =
+    tab === 'galleria' ? (stato === 'possedute' ? 'possedute' : stato === 'mancanti' ? 'mancanti' : 'tutte') : tab === 'acquisti' ? 'da acquistare' : 'in arrivo';
+  const exportBase = fileBaseName(`${set.name} ${set.subtitle ?? ''} ${exportWhat}`);
   const listCards = tab === 'acquisti' ? shopping : arriving;
   const selectedCards = listCards.filter((c) => selected.has(c.id));
   const listTotal = (selectedCards.length ? selectedCards : listCards).reduce((s, c) => s + (c.price ?? 0), 0);
   const noPrice = (selectedCards.length ? selectedCards : listCards).filter((c) => c.price == null).length;
+  const exportCards = tab === 'galleria' ? galleryExport : selectedCards.length ? selectedCards : listCards;
+  const exportLabel = tab !== 'galleria' && selectedCards.length ? 'selezionate' : exportWhat;
 
   return (
     <>
@@ -328,6 +341,9 @@ export default function SetPage() {
                 )}
               </>
             )}
+            <div className="lg:ml-auto">
+              <ExportMenu cards={exportCards} label={exportLabel} title={`${exportTitle} — ${exportWhat}`} baseName={exportBase} rarity={rarityText} />
+            </div>
             </div>
           </div>
         </div>
@@ -380,34 +396,6 @@ export default function SetPage() {
                 )}
               </div>
             </div>
-
-            {tab === 'acquisti' && listCards.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                <Button size="sm" variant="ghost" onClick={() => exportCsv(selectedCards.length ? selectedCards : listCards, exportBase, rarityText)}>
-                  <Download className="size-4" /> CSV
-                </Button>
-                <Button size="sm" variant="ghost" onClick={() => exportExcel(selectedCards.length ? selectedCards : listCards, exportBase, rarityText)}>
-                  <FileSpreadsheet className="size-4" /> Excel
-                </Button>
-                <Button size="sm" variant="ghost" onClick={() => exportNumericList(selectedCards.length ? selectedCards : listCards, exportTitle, exportBase, rarityText)}>
-                  <ListOrdered className="size-4" /> Lista numerica
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={async () => {
-                    try {
-                      await navigator.clipboard.writeText(numericList(selectedCards.length ? selectedCards : listCards, exportTitle, rarityText));
-                      toast({ text: 'Lista copiata negli appunti' });
-                    } catch {
-                      toast({ text: 'Copia non riuscita', tone: 'error' });
-                    }
-                  }}
-                >
-                  <ClipboardCopy className="size-4" /> Copia lista
-                </Button>
-              </div>
-            )}
 
             {listCards.length === 0 ? (
               tab === 'acquisti' ? (

@@ -23,7 +23,9 @@ export function fileBaseName(label: string): string {
   );
 }
 
-const HEADERS = ['#', 'Nome', 'Sottotitolo', 'Rarità', 'Versione', 'Tipo', 'Prezzo €'];
+export const statusLabel = (c: Pick<CardView, 'status'>) => (c.status === 'owned' ? 'Posseduta' : c.status === 'pending' ? 'In arrivo' : 'Mancante');
+
+const HEADERS = ['#', 'Nome', 'Sottotitolo', 'Rarità', 'Versione', 'Tipo', 'Stato', 'Copie', 'Prezzo €'];
 const row = (c: CardView, rarity: (r: string | null) => string) => [
   pad(c.number),
   c.name,
@@ -31,6 +33,8 @@ const row = (c: CardView, rarity: (r: string | null) => string) => [
   rarity(c.rarity),
   c.version,
   c.type ?? '',
+  statusLabel(c),
+  c.status === 'owned' ? String(c.quantity) : '0',
   c.price != null ? c.price.toFixed(2).replace('.', ',') : '',
 ];
 
