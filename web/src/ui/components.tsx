@@ -102,7 +102,7 @@ export function Stat({ label, value, tone }: { label: string; value: ReactNode; 
   const tones = { ok: 'text-emerald-300', warn: 'text-amber-300', muted: 'text-ink/70', accent: 'text-accent' };
   return (
     <div className="min-w-0">
-      <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-ink/50">{label}</div>
+      <div className="truncate text-[11px] font-medium uppercase tracking-[0.1em] text-ink/50" title={label}>{label}</div>
       <div className={`font-display text-xl font-semibold leading-tight sm:text-2xl ${tone ? tones[tone] : 'text-ink'}`}>{value}</div>
     </div>
   );

@@ -47,8 +47,8 @@ function CollectionCard({ collection, sets, progress, index }: { collection: Col
           </span>
         </div>
         <ProgressBar value={p} pending={pct(sum.pending, sum.total)} />
-        <div className="grid grid-cols-3 gap-3">
-          <Stat label="Completamento" value={`${p.toLocaleString('it-IT')}%`} tone="accent" />
+        <div className="grid grid-cols-3 gap-4">
+          <Stat label="Completo" value={`${p.toLocaleString('it-IT')}%`} tone="accent" />
           <Stat label="Possedute" value={<span className="tabular-nums">{sum.owned}<span className="text-base text-[var(--ink)]/45">/{sum.total}</span></span>} />
           <Stat label="Valore" value={sum.value > 0 ? formatEur(sum.value, true) : '—'} />
         </div>
