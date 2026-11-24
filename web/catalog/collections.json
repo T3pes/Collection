@@ -113,7 +113,8 @@
         "Futuristic Rare",
         "RGB Rare",
         "Rara iper Mega",
-        "Mega Iper Raro"
+        "Mega Iper Raro",
+        "Collezione Classica"
       ],
       "rarity_labels": {
         "Pikachu Rare": "Rara Pikachu",
@@ -197,6 +198,30 @@
             "pattern": "stars"
           },
           "sort": 30
+        },
+        {
+          "id": "pokemon-30th-c",
+          "name": "Collezione Classica del 30°",
+          "subtitle": "Megaevoluzione",
+          "code": "30C",
+          "release_date": "2026-09-16",
+          "price_provider": "tcgdex",
+          "price_config": {
+            "setId": "30th-c",
+            "series": "me",
+            "lang": "it",
+            "syncRarity": false
+          },
+          "theme": {
+            "accent": "#8AE0FE",
+            "accent2": "#F9DB30",
+            "ink": "#F2FBFF",
+            "bg": "#03101F",
+            "bg2": "#2571CA",
+            "glow": "rgba(138,224,254,0.40)",
+            "pattern": "stars"
+          },
+          "sort": 31
         }
       ]
     }
