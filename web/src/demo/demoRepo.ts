@@ -91,7 +91,7 @@ export const demoRepo: Repo = {
           (s) =>
             ({
               collection_id: c.id, release_date: null, logo_url: null, card_back_url: null, rarity_order: null,
-              price_config: {}, ...s,
+              ...s, price_config: ('price_config' in s ? s.price_config : null) ?? {},
             }) as unknown as CardSet,
         ),
       ),
