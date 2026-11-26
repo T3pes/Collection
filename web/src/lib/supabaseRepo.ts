@@ -84,7 +84,7 @@ export const supabaseRepo: Repo = {
       (from, to) =>
         supabase()
           .from('tcg_card_prices')
-          .select('card_id,price,price_low,price_avg30,currency,source,updated_at,tcg_cards!inner(set_id)')
+          .select('card_id,price,price_low,price_avg30,currency,source,url,updated_at,tcg_cards!inner(set_id)')
           .eq('tcg_cards.set_id', setId)
           .range(from, to),
       'Prezzi',

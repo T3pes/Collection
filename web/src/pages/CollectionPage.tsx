@@ -54,8 +54,12 @@ function SetCard({ set, collection, progress, index }: { set: CardSet; collectio
         </div>
         <div className="mt-auto flex items-center justify-between border-t border-ink/10 pt-4 text-xs text-ink/55">
           <span className="flex items-center gap-1.5">
-            {set.price_provider === 'tcgdex' ? <Euro className="size-3.5" /> : <PencilLine className="size-3.5" />}
-            {set.price_provider === 'tcgdex' ? 'Prezzi Cardmarket automatici' : 'Prezzi inseriti da te'}
+            {set.price_provider === 'tcgdex' || set.price_config?.source ? <Euro className="size-3.5" /> : <PencilLine className="size-3.5" />}
+            {set.price_provider === 'tcgdex'
+              ? 'Prezzi Cardmarket automatici'
+              : set.price_config?.source === 'narutocardcollector'
+                ? 'Prezzi eBay · narutocardcollector.com'
+                : 'Prezzi inseriti da te'}
           </span>
           <span className="flex items-center gap-1 font-semibold text-ink/80 transition group-hover:translate-x-1 group-hover:text-accent">
             Apri <ArrowRight className="size-3.5" />

@@ -69,6 +69,8 @@ export interface MarketPrice {
   price_avg30: number | null;
   currency: string;
   source: string;
+  /** pagina della carta sulla fonte del prezzo (es. narutocardcollector.com) */
+  url?: string | null;
   updated_at: string;
 }
 

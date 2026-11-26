@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight, ExternalLink, Minus, Plus, RotateCw, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { cardNumber, formatEur, isFoil, marketSearchUrl, rarityLabel } from '../../lib/cards';
+import { cardNumber, formatEur, isFoil, marketSearchUrl, priceSource, rarityLabel } from '../../lib/cards';
 import type { CardGroup, CardSet, CardStatus, CardView, Collection } from '../../lib/types';
 import { PerspectiveCard } from '../../ui/PerspectiveCard';
 
@@ -184,9 +184,15 @@ function VariantRow({ v, manual, onStatus, onQuantity, onPrice }: { v: CardView;
             {v.quantity > 1 && <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-semibold text-accent">{v.quantity - 1} doppie</span>}
           </div>
         )}
-        {!manual && (
+        {(!manual || v.market) && (
           <div className="flex items-center gap-2">
-            <span className="text-xs text-ink/50">Cardmarket</span>
+            {v.market?.url ? (
+              <a href={v.market.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-ink/50 hover:text-accent hover:underline" title="Vedi le vendite su questo sito">
+                {priceSource(v.market.source)?.name ?? v.market.source} <ExternalLink className="size-3" />
+              </a>
+            ) : (
+              <span className="text-xs text-ink/50">{priceSource(v.market?.source)?.name ?? 'Cardmarket'}</span>
+            )}
             <span className="font-semibold tabular-nums">{formatEur(v.market?.price)}</span>
             {v.market?.price_low != null && <span className="text-xs text-ink/45">min {formatEur(v.market.price_low)}</span>}
           </div>

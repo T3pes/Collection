@@ -123,3 +123,11 @@ export function isFoil(collection: Collection | undefined, c: Pick<Card, 'rarity
   const from = collection?.theme?.foilFrom ?? 3;
   return (c.rarity_rank ?? 0) >= from && (c.rarity_rank ?? 0) < 99 ? true : /holo|reverse|full art/i.test(c.version);
 }
+
+/** Nome e link della fonte dei prezzi di mercato, da mostrare come credito */
+export function priceSource(source: string | null | undefined): { name: string; label: string; href: string } | null {
+  if (source === 'narutocardcollector')
+    return { name: 'narutocardcollector.com', label: 'Mediana vendite eBay', href: 'https://narutocardcollector.com' };
+  if (source === 'cardmarket') return { name: 'Cardmarket', label: 'Prezzi Cardmarket (trend)', href: 'https://www.cardmarket.com' };
+  return null;
+}

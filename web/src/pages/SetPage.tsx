@@ -1,7 +1,7 @@
 import { Clock3, Layers, PackageCheck, RefreshCw, ShoppingCart, SquareStack, Trash2 } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { Navigate, useParams, useSearchParams } from 'react-router';
-import { formatEur, groupCards, matchesQuery, pct, rarityLabel, sortGroups, versionIndex, type SortKey } from '../lib/cards';
+import { formatEur, groupCards, matchesQuery, pct, priceSource, rarityLabel, sortGroups, versionIndex, type SortKey } from '../lib/cards';
 import { fileBaseName } from '../lib/export';
 import { useCollections, useRefreshPrices, useSetCards, useSetQuantity, useSets, useSetStatus, useSetUserPrice } from '../lib/queries';
 import type { CardGroup, CardStatus, CardView } from '../lib/types';
@@ -34,6 +34,8 @@ export default function SetPage() {
   useDocumentTheme(collection ? theme : undefined);
 
   const { views, isLoading, error, lastPriceUpdate } = useSetCards(setId);
+  // Fonte esterna dei prezzi per i set senza listino automatico (es. Naruto da narutocardcollector.com)
+  const extSource = useMemo(() => priceSource(views.find((v) => v.market && v.market.source !== 'cardmarket')?.market?.source), [views]);
   const statusMut = useSetStatus(setId);
   const qtyMut = useSetQuantity(setId);
   const priceMut = useSetUserPrice(setId);
@@ -258,6 +260,14 @@ export default function SetPage() {
                     {!refresh.isPending && <RefreshCw className="size-3.5" />} Aggiorna prezzi
                   </Button>
                 </>
+              ) : extSource ? (
+                <span>
+                  {extSource.label} da{' '}
+                  <a href={extSource.href} target="_blank" rel="noopener noreferrer" className="font-semibold text-accent hover:underline">
+                    {extSource.name}
+                  </a>
+                  {lastPriceUpdate ? ` · aggiornati il ${new Date(lastPriceUpdate).toLocaleDateString('it-IT')}` : ''} · puoi sempre inserire un tuo prezzo
+                </span>
               ) : (
                 <span>Nessun listino automatico per questo set: inserisci i prezzi dal dettaglio di ogni carta.</span>
               )}

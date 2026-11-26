@@ -64,7 +64,10 @@
           "subtitle": "Set 1 · 1ª edizione",
           "code": "S1E1",
           "price_provider": "manual",
-          "sort": 10
+          "sort": 10,
+          "price_config": {
+            "source": "narutocardcollector"
+          }
         },
         {
           "id": "naruto-s1-2ed",
@@ -72,7 +75,10 @@
           "subtitle": "Set 1 · 2ª edizione",
           "code": "S1E2",
           "price_provider": "manual",
-          "sort": 20
+          "sort": 20,
+          "price_config": {
+            "source": "narutocardcollector"
+          }
         },
         {
           "id": "naruto-s2-1ed",
@@ -80,7 +86,10 @@
           "subtitle": "Set 2 · 1ª edizione",
           "code": "S2E1",
           "price_provider": "manual",
-          "sort": 30
+          "sort": 30,
+          "price_config": {
+            "source": "narutocardcollector"
+          }
         }
       ]
     },

@@ -64,3 +64,18 @@ Esempio (Fiamme Spettrali):
 ```
 
 > Lo script usa `SUPABASE_SERVICE_ROLE_KEY` da `web/.env`: tienila solo sul tuo PC, non metterla su Vercel né su Git.
+
+## 5. Prezzi Naruto Mythos (narutocardcollector.com)
+
+Per Naruto non esiste un listino come Cardmarket: i prezzi sono la **mediana delle vendite eBay concluse**
+raccolte (a mano) da [narutocardcollector.com](https://narutocardcollector.com), usate con il consenso del gestore
+e citate nell'app con il link alla carta.
+
+```bash
+cd web
+node scripts/naruto-prices.mjs      # ~20 min, 1 richiesta al secondo; riprende da dove si era fermato
+```
+
+Genera `scripts/out/naruto-prices.sql`: eseguilo nel SQL Editor di Supabase (aggiorna solo le carte abbinate in modo univoco
+e mostra le carte ambigue o senza corrispondenza). Il gestore inserisce le vendite con qualche giorno di ritardo,
+quindi basta rilanciarlo ogni tanto (es. una volta a settimana o al mese), non ogni giorno.
